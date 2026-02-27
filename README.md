@@ -123,3 +123,6 @@ NEXT_PUBLIC_API_URL=https://your-new-backend-url.com
 
 - `GET /api/message`: Get the integration message
   - Returns: `{"message": "You've successfully integrated the backend!"}`
+
+  ## Architecture Documentation
+  -(https://docs.google.com/document/d/1_ENa57Gc8hDq0uTC2QFZFNv5PPPNqiox-zru3HY29Hk/edit?usp=sharing/edit)
