@@ -4,29 +4,41 @@ import axios from 'axios';
 
 export default function Home() {
   const [message, setMessage] = useState('Loading...');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('Connecting...');
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://backend:5000';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('API URL:', apiUrl);
+        console.log('Attempting to connect to backend...');
+        
         // First check if backend is healthy
-        const healthCheck = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/health`);
+        const healthCheck = await axios.get(`${apiUrl}/api/health`, { timeout: 5000 });
+        console.log('Health check response:', healthCheck.data);
         
         if (healthCheck.data.status === 'healthy') {
           setStatus('Backend is connected!');
           // Then fetch the message
-          const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/message`);
+          const response = await axios.get(`${apiUrl}/api/message`, { timeout: 5000 });
+          console.log('Message response:', response.data);
           setMessage(response.data.message);
         }
       } catch (error) {
+        console.error('Error details:', {
+          message: error.message,
+          code: error.code,
+          config: error.config?.url,
+          status: error.response?.status,
+          data: error.response?.data
+        });
         setMessage('Failed to connect to the backend');
-        setStatus('Backend connection failed');
-        console.error('Error:', error);
+        setStatus(`Backend connection failed: ${error.message}`);
       }
     };
 
     fetchData();
-  }, []);
+  }, [apiUrl]);
 
   return (
     <div className="container">
@@ -46,7 +58,7 @@ export default function Home() {
           <p>{message}</p>
         </div>
         <div className="info">
-          <p>Backend URL: {process.env.NEXT_PUBLIC_API_URL}</p>
+          <p>Backend URL: {apiUrl}</p>
         </div>
       </main>
 
